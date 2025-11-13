@@ -17,6 +17,20 @@ import time
 from joblib import Parallel, delayed
 
 
+from sklearn.linear_model import Ridge, Lasso, ElasticNet
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.feature_selection import VarianceThreshold, RFE, SequentialFeatureSelector
+from sklearn.inspection import permutation_importance
+from sklearn.neighbors import KNeighborsRegressor
+import lightgbm as lgb
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
+from sklearn.metrics import mean_squared_error, r2_score
+
+
+
 logging.basicConfig(filename='program_log_fs.txt', level=logging.INFO)
 
 def log_time_and_step(step_name):

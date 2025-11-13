@@ -86,13 +86,13 @@ The system aggregates structured and unstructured data from various public healt
 - Sequential Feature Selection (SFS) with KNN  
 - SFS with Ridge Regression  
 
-### Ensemble and Gradient Models Added
+### Models Added
+- Support Vector Machine (SVM)
 - Random Forest  
 - XGBoost  
 - LightGBM  
 - CatBoost  
 - Gradient Boosting Classifier  
-- HistGradientBoosting  
 
 ---
 
