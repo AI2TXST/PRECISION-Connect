@@ -1,0 +1,12 @@
+Beneficiary_ID: 4851692
+Inpatient_Diagnosis_1_ICD_10_C_M: 25720
+Inpatient_Diagnosis_2_ICD_10_C_M: 21368
+Inpatient_Diagnosis_3_ICD_10_C_M: 17579
+Inpatient_Diagnosis_4_ICD_10_C_M: 14526
+Inpatient_Diagnosis_5_ICD_10_C_M: 11950
+Inpatient_Diagnosis_6_ICD_10_C_M: 9998
+Inpatient_Diagnosis_ICD_10_C_M_Not_Applicable: 2
+Primary_Diagnosis_ICD_10_C_M_Code: 27149
+Primary_Diagnosis_Severity_Rating_ICD_10_C_M_Code: 5
+Primary_Optional_Diagnosis_ICD_10_C_M_Code: 3621
+Primary_Optional_Diagnosis_Multiple_Codes_ICD_10_C_M: 1142

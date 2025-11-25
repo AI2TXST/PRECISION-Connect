@@ -11,7 +11,7 @@
 ## Project Abstract
 This project extends the existing CONNECT framework to develop a more comprehensive and scalable machine learning pipeline for modeling high-dimensional Electronic Health Records (EHR) data. We aim to integrate additional feature selection methods—such as variance thresholds, model-based selection, permutation importance, and sequential feature selectors—alongside ensemble learning algorithms including Random Forest, XGBoost, LightGBM, CatBoost, and Gradient Boosting Machines.
 
-By evaluating these approaches on large-scale clinical datasets, specifically the CMS OASIS dataset, this project seeks to improve predictive accuracy, model robustness, and interpretability. The extended framework will support reproducible experiments, benchmarking, and systematic comparison across feature selection techniques and ensemble models.
+By evaluating these approaches on large-scale datasets this project seeks to improve predictive accuracy, model robustness, and interpretability. The extended framework will support reproducible experiments, benchmarking, and systematic comparison across feature selection techniques and ensemble models.
 
 ---
 
@@ -31,7 +31,7 @@ We propose to extend the CONNECT framework to incorporate a more diverse set of 
 The benchmark will be the baseline CONNECT models, which include a LightGBM implementation.
 
 The CONNECT system is built around three core components:  
-1. Aggregating diverse datasets (CMS, EHR, SDOH, etc.), as reflected in the “datasetQuickView.ipynb” notebook.  
+1. Aggregating diverse datasets (CMS, EHR, SDOH, etc.), reflected in the **“datasetQuickView.ipynb”** (tbd) notebook.
 2. Implementing Comorbidity scores, HFRS, Disability and Impairment Scores, and calculating disparity metrics (Absolute/Relative Index Disparity, Population-Weighted Disparity, Attributable Disparity).  
 3. Developing an intuitive decision-support system tailored for healthcare practitioners.
 
@@ -55,44 +55,52 @@ The system aggregates structured and unstructured data from various public healt
 | 2020 Census UA | 3,234 | 33 | 10 |
 | SDOH | 85,529 | 329 | 70 |
 
+
+
+### ICD Sections:
+| Section | Range | # Patients |
+|------|------|------|
+|'A00-B99'|'Certain infectious and parasitic diseases'||
+|'C00-D49'|'Neoplasms'||
+|'D50-D89'|'Diseases of the blood and blood-forming organs and certain disorders involving the immune mechanism'||
+|'E00-E89'|'Endocrine, nutritional and metabolic diseases'||
+|'F01-F99'|'Mental, Behavioral and Neurodevelopmental disorders'||
+|'G00-G99'|'Diseases of the nervous system'||
+|'H00-H59'|'Diseases of the eye and adnexa'||
+|'H60-H95'|'Diseases of the ear and mastoid process'||
+|'I00-I99'|'Diseases of the circulatory system'||
+|'J00-J99'|'Diseases of the respiratory system'||
+|'K00-K95'|'Diseases of the digestive system'||
+|'L00-L99'|'Diseases of the skin and subcutaneous tissue'||
+|'M00-M99'|'Diseases of the musculoskeletal system and connective tissue'||
+|'N00-N99'|'Diseases of the genitourinary system'||
+|'O00-O9A'|'Pregnancy, childbirth and the puerperium'||
+|'P00-P96'|'Certain conditions originating in the perinatal period'||
+|'Q00-Q99'|'Congenital malformations, deformations and chromosomal abnormalities'||
+|'R00-R99'|'Symptoms, signs and abnormal clinical and laboratory findings, not elsewhere classified'||
+|'S00-T88'|'Injury, poisoning and certain other consequences of external causes'||
+|'U00-U85'|'Codes for special purposes'||
+|'V00-Y99'| 'External causes of morbidity'||
+|'Z00-Z99'|'Factors influencing health status and contact with health services'||
 ---
 
 ## Methodology
 
 ### Baseline Tools
-1. Core CONNECT system components (county selection, demographics, choropleth maps).  
-2. Advanced analytics (heatmaps, treemaps, dendrograms).  
-3. Initial ML integration: LightGBM classifier with real-time preprocessing, classification reports, and feature importance display.
+- Core CONNECT components: county selection, demographics, choropleth maps  
+- Advanced analytics: heatmaps, treemaps, dendrograms  
+- Initial ML: LightGBM classifier with real-time preprocessing, classification reports, and feature importance
 
-### Feature Selection Methods Added
+### Feature Selection
+**Filter:** Variance Threshold  
+**Embedded:** LASSO, Random Forest, Gradient Boosting, XGBoost, LightGBM, CatBoost feature importance  
+**Wrapper:** RFE (Random Forest, Ridge), Permutation Importance (Random Forest, Ridge), Sequential Feature Selection (KNN, Ridge)
 
-**Filter Methods**  
-- Variance Threshold  
+### Models
+- SVM, Random Forest, XGBoost, LightGBM, CatBoost, Gradient Boosting Classifier
 
-**Embedded Methods**  
-- L1-Regularized Logistic Regression (LASSO)  
-- Random Forest Feature Importance  
-- Gradient Boosting Feature Importance 
-- XGBoost Feature Importance
-- LightGBM Feature Importance
-- CatBoost Feature Importance
-
-
-**Wrapper Methods**  
-- Recursive Feature Elimination (RFE) with Random Forest  
-- RFE with Ridge Regression  
-- Permutation Importance (Random Forest)  
-- Permutation Importance (Ridge Regression)  
-- Sequential Feature Selection (SFS) with KNN  
-- SFS with Ridge Regression  
-
-### Models Added
-- Support Vector Machine (SVM)
-- Random Forest  
-- XGBoost  
-- LightGBM  
-- CatBoost  
-- Gradient Boosting Classifier  
+### Additional Functionality
+- Users can select ICD sections to run the pipeline on specific conditions or comorbidities
 
 ---
 
