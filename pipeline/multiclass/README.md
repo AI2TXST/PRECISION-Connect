@@ -1,60 +1,70 @@
 # Multiclass: Stable / ED-Only / Hospitalized
 
-This folder contains the **original 3-class model** that preceded the two-task reframe
-now used in `pipeline/task1/` and `pipeline/task2/`. It is preserved for provenance
-and paper reproducibility — it is not the current production model.
+This folder contains the original 3-class prediction model trained on the national CMS OASIS dataset. The findings from this phase motivated the two-task reframe now implemented in `pipeline/task1/` and `pipeline/task2/`.
 
-## What this is
-
-A single multiclass classifier trained on Texas OASIS home health episodes to predict
-one of three outcomes at episode close:
+## Problem Definition
 
 | Label | Class | Description |
-|-------|-------|-------------|
+|---|---|---|
 | 0 | Stable | Discharged without any acute care utilization |
 | 1 | ED Only | Emergency department visit, not admitted |
 | 2 | Hospitalized | Admitted to hospital (inpatient) |
 
 ## Dataset
 
-- **File:** `data/datapreprocessed.csv`
-- **Rows:** 938,549 episodes
-- **Features:** 114 (after dropping 3 leaky/administrative columns)
-- **Class balance:** Stable 79.9% / Hospitalized 17.1% / ED-Only 3.0%
-- **Split:** 70% train / 15% val / 15% test (stratified)
+- **Source:** National CMS OASIS dataset
+- **Episodes:** 938,549
+- **Features:** 114
+- **Class balance:** Stable 74.9% / Hospitalized 21.6% / ED-Only 3.5%
+- **Split:** 70/15/15 stratified train/val/test
 
-## Results
+## Experiments
 
-| Model | Macro F1 | F1 (Stable) | F1 (ED Only) | F1 (Hospitalized) |
-|-------|----------|-------------|--------------|-------------------|
-| Random Forest | 0.6475 | 0.9773 | 0.0009 | 0.9642 |
-| XGBoost | 0.6481 | 0.9774 | 0.0032 | 0.9638 |
-| **LightGBM** | **0.6486** | **0.9774** | **0.0046** | **0.9638** |
+### Imbalance Strategies Tested
 
-Best model: **LightGBM, Macro F1 = 0.6486** (with targeted SMOTE: ED-Only oversampled to 100k).
+| Strategy | Models |
+|---|---|
+| No balancing | LR, LightGBM, XGBoost, MLP |
+| SMOTE | LightGBM |
+| is_unbalance=True | LightGBM |
+| class_weight=balanced | LightGBM, XGBoost, MLP |
+| Random Undersampling (3:1:1) | LightGBM |
+| Random Undersampling (1:1:1) | LightGBM |
+| Threshold tuning | LightGBM |
+| One-vs-Rest (OvR) | LightGBM |
+| TabNet (class weights) | TabNet |
 
-## Why we moved away from this framing
+### Full Results
 
-Two structural problems made the 3-class framing unsuitable for the paper:
+| Model / Strategy | Macro F1 | F1 (Stable) | F1 (ED Only) | F1 (Hosp) |
+|---|---|---|---|---|
+| LightGBM Optuna | 0.578 | 0.860 | 0.113 | 0.761 |
+| LightGBM Random Search | 0.576 | 0.850 | 0.117 | 0.761 |
+| LightGBM Grid Search | 0.576 | 0.847 | 0.120 | 0.762 |
+| Undersample 3:1:1 | 0.580 | 0.890 | 0.090 | 0.750 |
+| Undersample 1:1:1 | 0.540 | 0.740 | 0.120 | 0.760 |
+| TabNet (class weights) | 0.560 | 0.800 | 0.130 | 0.760 |
+| LightGBM class_weight=balanced | 0.542 | 0.747 | 0.122 | 0.758 |
+| XGBoost class_weight | 0.550 | 0.762 | 0.124 | 0.763 |
+| MLP scaled + weighted | 0.540 | 0.750 | 0.120 | 0.760 |
+| OvR combined | 0.510 | 0.700 | 0.110 | 0.730 |
+| Threshold tuning (best) | 0.576 | — | 0.120 | — |
+| LightGBM baseline (no balance) | 0.566 | 0.924 | 0.000 | 0.774 |
+| LightGBM SMOTE | 0.566 | 0.924 | 0.000 | 0.774 |
+| LightGBM is_unbalance=True | 0.566 | 0.924 | 0.000 | 0.774 |
+| XGBoost baseline | 0.567 | 0.925 | 0.001 | 0.776 |
+| MLP baseline (unweighted) | 0.570 | 0.920 | 0.000 | 0.780 |
+| MLP scaled (unweighted) | 0.570 | 0.920 | 0.000 | 0.780 |
+| Logistic Regression baseline | 0.542 | 0.909 | 0.000 | 0.716 |
 
-1. **ED-Only F1 is near zero regardless of balancing strategy.** Even with targeted SMOTE
-   boosting the ED-Only class from 19k → 100k training samples, the best F1 for that class
-   was 0.005. `baselines.py` shows that no-balancing, `is_unbalance`, and random undersampling
-   all produce similarly near-zero ED-Only F1.
+### One-vs-Rest Binary Results
 
-2. **The class boundary is incoherent.** Among patients who visited the ED, roughly 80%
-   were subsequently admitted (hospitalized). The distinction between "ED Only" and
-   "Hospitalized" is therefore driven more by ED admission policy at the receiving
-   hospital than by anything in the patient's home health record. The classes are not
-   separable from OASIS features alone.
+| Task | Macro F1 | Class F1 |
+|---|---|---|
+| Hospitalized vs Rest | 0.83 | 0.75 |
+| Stable vs Rest | 0.81 | 0.90 |
+| ED Only vs Rest | 0.45 | 0.11 |
 
-The reframe splits the prediction into two distinct, tractable binary tasks:
-- **Task 1** (`pipeline/task1/`): Among all home health patients, predict unplanned hospitalization (Stable vs. Hospitalized). n=5.5M national.
-- **Task 2** (`pipeline/task2/`): Among ED presenters only, predict admission vs. discharge. n=926k national.
+## Key Finding
 
-## Files
-
-| File | Description |
-|------|-------------|
-| `train.py` | Full pipeline: load → SMOTE → RF/XGBoost/LightGBM → eval → SHAP → save |
-| `baselines.py` | Ablation: no-balancing vs. is_unbalance vs. random undersampling across all three models |
+The ED-Only class F1 ceiling across every strategy tested is 0.11–0.13. No combination of model architecture, imbalance handling, or threshold tuning resolved the class boundary. Analysis of the data revealed that approximately 80% of ED visits resulted in inpatient admission, making ED-Only and Hospitalized indistinguishable from OASIS start-of-care features alone. This finding motivated the reframe into two focused binary tasks.
