@@ -1,0 +1,26 @@
+# Connect 2.0 — Pipeline
+
+This project predicts acute care outcomes for home health patients using the national CMS OASIS dataset (~15.7M assessment rows) merged with ZIP-level SDOH data. Two binary prediction tasks are modeled: **Task 1** predicts inpatient hospitalization versus clinical stability; **Task 2** predicts hospital admission versus discharge among patients who presented to the emergency department. Both tasks use LightGBM with Optuna hyperparameter tuning on an 80/10/10 train/val/test split.
+
+| File | Task | What it does | Input | Output |
+|---|---|---|---|---|
+| `shared/build_national_dataset.py` | Both | Merges OASIS assessments with ZIP-level SDOH data and computes episode-level comorbidity scores (Charlson, Elixhauser, HFRS) | `OASIS_v2.csv`, `SDOH_2020_ZIPCODE_1_0.csv` | `data/National_OASIS_master_episode_scores.csv` |
+| `shared/eda.py` | Both | Cleans the master dataset, constructs outcome variables, and generates demographic and outcome figures | `data/National_OASIS_master_episode_scores.csv` | `data/National_OASIS_surface_cleaned.parquet`, `figures/` |
+| `shared/results_viz.py` | Both | Generates lollipop comparison plots and confusion matrices for final test results across both tasks | Hardcoded final results | `figures/task1_lollipop.png`, `figures/task2_lollipop.png`, `figures/final_cm_task1.png`, `figures/final_cm_task2.png` |
+| `shared/shap_plots.py` | Both | Generates beeswarm SHAP summary plots for the best model from each task | `models/task1_310_best_params.pkl`, `models/task2_330_optuna_th.pkl`, feature datasets | `figures/task1_shap_summary.png`, `figures/task2_shap_summary.png` |
+| `task1/prep.py` | Task 1 | Documents the Task 1 cohort preparation steps; full preprocessing logic is in `src/Untitled Folder/EDA_Combined_db.ipynb` | `data/National_OASIS_surface_cleaned.parquet` | `data/National_task1_model_ready.parquet` |
+| `task1/feature_selection.py` | Task 1 | Reduces 539 features to 310 via variance threshold, pairwise correlation filter, NaN imputation, and target correlation filter | `data/National_task1_model_ready.parquet` | `data/National_task1_310features.parquet` |
+| `task1/baselines.py` | Task 1 | Trains and evaluates baseline models: Logistic Regression, Random Forest, LightGBM (default), LightGBM (class_weight=balanced) | `data/National_task1_310features.parquet` | Console metrics |
+| `task1/train_optuna.py` | Task 1 | Tunes LightGBM with Optuna (75 trials, 5-fold CV, ROC-AUC objective); saves best model and validation metrics | `data/National_task1_310features.parquet` | `models/lgbm_optuna_310_model.txt`, `models/lgbm_optuna_310_val_metrics.json` |
+| `task1/eval.py` | Task 1 | Retrains LightGBM with best Optuna parameters, tunes classification threshold on validation set, reports test-set metrics | `data/National_task1_310features.parquet` | `models/task1_310_best_params.pkl`, console metrics |
+| `task2/prep_cohort.py` | Task 2 | Filters OASIS to ED-presenting episodes, constructs binary admission target, deduplicates to episode level, and applies cleaning and encoding | `data/National_OASIS_surface_cleaned.parquet` | `data/National_Task2_ED_Cohort_encoded.parquet` |
+| `task2/feature_selection.py` | Task 2 | Applies variance threshold, pairwise correlation filter, NaN imputation, and target correlation filter to produce the 330-feature dataset | `data/National_Task2_ED_Cohort_encoded.parquet` | `data/National_Task2_330features.parquet` |
+| `task2/eda.py` | Task 2 | Generates EDA figures and runs baseline models on the 330-feature dataset | `data/National_Task2_330features.parquet` | `figures/task2/top20_correlations_postFS.png`, console metrics |
+| `task2/baselines.py` | Task 2 | Trains and evaluates baseline models: Logistic Regression, Random Forest, LightGBM (default), LightGBM (is_unbalance=True) | `data/National_Task2_330features.parquet` | Console metrics |
+| `task2/train_optuna.py` | Task 2 | Tunes LightGBM with Optuna on the 330-feature dataset with threshold tuning on the validation set; saves best model | `data/National_Task2_330features.parquet` | `models/task2_330_best_params.pkl`, console metrics |
+| `task2/eval.py` | Task 2 | Retrains LightGBM with best Optuna parameters, tunes classification threshold on validation set, reports test-set metrics | `data/National_Task2_330features.parquet` | `models/task2_330_best_params.pkl`, console metrics |
+| `task2/sdoh_ablation.py` | Task 2 | Ablation study isolating the contribution of clinical versus SDOH features by training separate models on each feature subset | `data/National_Task2_330features.parquet` | `models/task2_clinical_only.pkl`, `models/task2_sdoh_only.pkl`, console metrics |
+| `multiclass/train.py` | Provenance | Original 3-class model (Stable / ED-Only / Hospitalized) using RF, XGBoost, and LightGBM with targeted SMOTE | `data/datapreprocessed.csv` | `models/multiclass_*.pkl`, `figures/` |
+| `multiclass/baselines.py` | Provenance | Baseline comparison across imbalance strategies for the 3-class problem | `data/datapreprocessed.csv` | Console metrics, `figures/baseline/` |
+| `slurm/task1_train.slurm` | Task 1 | SLURM job script for `task1/train_optuna.py` (48 CPUs, 400 GB, himem partition) | — | — |
+| `slurm/task2_train.slurm` | Task 2 | SLURM job script for `task2/train_optuna.py` (8 CPUs, 200 GB, himem partition) | — | — |
