@@ -1,5 +1,10 @@
 # Connect-2.0
 
+## Publication
+
+The findings from this repository have contributed to the following academic works:
+*   **Journal Article (Under Review):** *ACM BCB 2026*.
+
 ## System Build Process
 
 To build the Connect System, run the following notebooks in the following order. Each step processes raw data into the formats required by the system.
@@ -50,3 +55,13 @@ To launch the dashboard, use the following commands:
 cd "Connect-2.0"
 streamlit run County_Comorbidity_Analysis.py
 ```
+```
+
+```bibtex
+@inproceedings{elizondo2026acmbcb,
+  author    = {Elizondo, Mirna},
+  title     = {PRECISION-Connect: AI-Ready Multimorbidity and SDOH Risk Vectors for Explainable 30-Day Readmission and County-Level Disparity Modeling},
+  booktitle = {Proceedings of the 17th ACM International Conference on Bioinformatics, Computational Biology and Health Informatics (ACM BCB)},
+  year      = {2026},
+  note      = {Poster}
+}
