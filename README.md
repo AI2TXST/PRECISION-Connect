@@ -3,7 +3,8 @@
 ## Publication
 
 The findings from this repository have contributed to the following academic works:
-*   **Journal Article (Under Review):** *ACM BCB 2026*.
+*   **Paper:** Mirna Elizondo, Daniel J Amante, and Jelena Tešić. 2026. PRECISION- Connect: AI-Ready Multimorbidity and SDOH Risk Vectors for Explainable 30-Day Readmission and County-Level Disparity Modeling. In 17th ACM In-
+ternational Conference on Bioinformatics, Computational Biology and Health Informatics (BCB ’26), June 30-July 03, 2026, Rende (CS), Italy. ACM, New York, NY, USA, 6 pages. https://doi.org/10.1145/3807503.3819383
 
 ## System Build Process
 
