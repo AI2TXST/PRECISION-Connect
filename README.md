@@ -1,10 +1,5 @@
 # Connect-2.0
 
-## Publication
-
-The findings from this repository have contributed to the following academic works:
-*   **Paper:** Mirna Elizondo, Daniel J Amante, and Jelena Tešić. 2026. PRECISION- Connect: AI-Ready Multimorbidity and SDOH Risk Vectors for Explainable 30-Day Readmission and County-Level Disparity Modeling. In 17th ACM In-
-ternational Conference on Bioinformatics, Computational Biology and Health Informatics (BCB ’26), June 30-July 03, 2026, Rende (CS), Italy. ACM, New York, NY, USA, 6 pages. https://doi.org/10.1145/3807503.3819383
 
 ## System Build Process
 
@@ -56,13 +51,20 @@ To launch the dashboard, use the following commands:
 cd "Connect-2.0"
 streamlit run County_Comorbidity_Analysis.py
 ```
-```
 
+## Publication
 ```bibtex
-@inproceedings{elizondo2026acmbcb,
-  author    = {Elizondo, Mirna},
-  title     = {PRECISION-Connect: AI-Ready Multimorbidity and SDOH Risk Vectors for Explainable 30-Day Readmission and County-Level Disparity Modeling},
-  booktitle = {Proceedings of the 17th ACM International Conference on Bioinformatics, Computational Biology and Health Informatics (ACM BCB)},
+@inproceedings{Elizondo2026PRECISIONConnect,
+  author    = {Mirna Elizondo and Daniel J. Amante and Jelena Te{\v{s}}i{\'c}},
+  title     = {PRECISION-Connect: AI-Ready Multimorbidity and {SDOH} Risk Vectors for Explainable 30-Day Readmission and County-Level Disparity Modeling},
+  booktitle = {Proceedings of the 17th {ACM} International Conference on Bioinformatics, Computational Biology and Health Informatics ({BCB} '26)},
   year      = {2026},
-  note      = {Poster}
+  month     = jun,
+  address   = {Rende (CS), Italy},
+  publisher = {Association for Computing Machinery},
+  location  = {Rende (CS), Italy},
+  pages     = {1--6},
+  doi       = {10.1145/3807503.3819383},
+  url       = {https://doi.org/10.1145/3807503.3819383}
 }
+```
